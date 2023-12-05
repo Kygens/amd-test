@@ -38,7 +38,7 @@ jobs:
           echo $TASK_URL
           echo $UPDATED_TASK_BODY
           # Update the task comment
-          curl -L \
+          echo curl -L \
           -X PATCH \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
