@@ -1,0 +1,32 @@
+name: Check and Complete Task in Another Repository
+
+on:
+  pull_request:
+    types:
+      - closed
+      - synchronize
+      - merged
+
+jobs:
+  checkAndCompleteTask:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Récupérer le corps de la pull request
+      run: |
+        PR_BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+                    "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }}" | jq -r '.body')
+
+        # Extraire le numéro de la pull request mentionnée
+        MENTIONED_PR_NUMBER=$(echo "$PR_BODY" | grep -oP 'mentioned this pull request \K\d+')
+
+        # Si une pull request a été mentionnée
+        if [ -n "$MENTIONED_PR_NUMBER" ]; then
+          echo "Pull request mentionnée : #$MENTIONED_PR_NUMBER"
+
+          # Ajoutez votre logique pour marquer la tâche comme terminée dans le dépôt d'origine
+          # Utilisez l'API GitHub pour ajouter un commentaire avec la tâche cochée dans le dépôt d'origine
+          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -d '{"body": "[x] #'$MENTIONED_PR_NUMBER' (Description de la tâche)"}' \
+            "https://api.github.com/repos/owner/repo-origin/issues/$MENTIONED_PR_NUMBER/comments"
+        fi
