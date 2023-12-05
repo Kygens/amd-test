@@ -18,7 +18,7 @@ jobs:
     - name: Récupérer le corps de la pull request
       run: |
         PR_BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-                    "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }}" | jq -r '.body')
+                    "https://github.com/repos/${{ github.repository }}/pull/1" | jq -r '.body')
 
         # Extraire le numéro de la pull request mentionnée
         MENTIONED_PR_NUMBER=$(echo "$PR_BODY" | grep -oP 'mentioned this pull request \K\d+')
