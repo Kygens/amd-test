@@ -21,15 +21,15 @@ jobs:
           
           # Get the number of the current PR
           PR_NUMBER=${{ github.event.pull_request.number }}
-          
+          echo $PR_NUMBER
           # Get the repository where the current PR is located
           REPO=${{ github.repository }}
-          
+          echo $REPO
           # Get the API URL of the current PR
           API_URL="https://api.github.com/repos/$REPO/issues/$PR_NUMBER/timeline"
-          
+          echo $API_URL
           # Get the comments of the current PR
-          TIMELINE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -i $API_URL)
+          TIMELINE=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -i $API_URL)
           echo $TIMELINE
           # Parse the comments to get the ones that mention a PR in Repo A
           TASK_COMMENTS=$(echo $TIMELINE | jq '.[] | .source.issue.pull_request.html_url')
