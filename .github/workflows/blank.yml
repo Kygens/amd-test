@@ -31,21 +31,18 @@ jobs:
           TIMELINE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
           
           # Parse the comments to get the ones that mention the PR
-          TASK_URL=$(echo $TIMELINE | jq '.[1] | .source.issue.pull_request.url')
+          TASK_URL=$(echo $TIMELINE | jq -r '.[1] | .source.issue.pull_request.url')
           
           TASK_BODY=$(echo $TIMELINE | jq '.[1] | .source.issue.body')
           UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
           echo $TASK_URL
           echo $UPDATED_TASK_BODY
-          TASK_URL_ENCODED=$(urlencode "$TASK_URL")
-          echo $TASK_URL_ENCODED
           # Update the task comment
-          curl --version
-          curl $TASK_URL_ENCODED
-          # curl -L \
-          # -X PATCH \
-          # -H "Accept: application/vnd.github+json" \
-          # -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
-          # -H "X-GitHub-Api-Version: 2022-11-28" \
-          # '$TASK_URL' \
-          # -d '{\"body\": \"$UPDATED_TASK_BODY\"}'
+          # curl $TASK_URL
+          curl -L \
+          -X PATCH \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "$TASK_URL" \
+          -d '{\"body\": \"$UPDATED_TASK_BODY\"}'
