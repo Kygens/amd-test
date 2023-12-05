@@ -40,7 +40,8 @@ jobs:
           # TASK_URL_ENCODED=$(urlencode "$TASK_URL")
           # echo $TASK_URL_ENCODED
           # Update the task comment
-          curl -v -L -X PATCH $TASK_URL
+          curl --version
+          curl PATCH $TASK_URL
           # curl -L \
           # -X PATCH \
           # -H "Accept: application/vnd.github+json" \
