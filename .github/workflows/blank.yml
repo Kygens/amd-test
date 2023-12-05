@@ -32,7 +32,7 @@ jobs:
           TIMELINE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
           
           # Parse the comments to get the ones that mention a PR in Repo A
-          TASK_COMMENTS=$(echo $TIMELINE | jq '.[].source.issue')
+          TASK_COMMENTS=$(echo $TIMELINE | jq '.[] | .source.issue.pull_request.html_url')
           
           # Loop over the task comments
           echo $TASK_COMMENTS | jq -r '.[] | @base64' | while read TASK_COMMENT; do
