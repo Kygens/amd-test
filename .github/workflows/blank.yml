@@ -9,7 +9,7 @@ on:
 jobs:
   update-task:
     runs-on: ubuntu-latest
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == f
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,8 +20,8 @@ jobs:
           sudo apt-get install jq curl
           
           # Get the number of the current PR
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          echo $PR_NUMBER
+          PR_NUMBER=1 #${{ github.event.pull_request.number }}
+          # echo $PR_NUMBER
           # Get the repository where the current PR is located
           REPO=${{ github.repository }}
           echo $REPO
