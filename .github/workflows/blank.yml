@@ -6,6 +6,9 @@ on:
       - closed
       - synchronize
       - merged
+  push:
+    branches:
+      main
 
 jobs:
   checkAndCompleteTask:
