@@ -31,26 +31,31 @@ jobs:
           # Get the comments of the current PR
           TIMELINE=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
           echo $TIMELINE
-          # Parse the comments to get the ones that mention a PR in Repo A
-          TASK_COMMENTS=$(echo $TIMELINE | jq '.[] | .source.issue.pull_request.html_url')
+
           
-          # Loop over the task comments
-          echo $TASK_COMMENTS | jq -r '.[] | @base64' | while read TASK_COMMENT; do
-            TASK_COMMENT=$(echo $TASK_COMMENT | base64 --decode)
+          # Parse the comments to get the ones that mention a PR in Repo A
+          TASK_COMMENTS=$(echo $TIMELINE | jq '.[1] | .source.issue.pull_request.url')
+          TASK_BODY=$(echo $TIMELINE | jq '.[1] | .source.issue.body')
+          echo $TASK_BODY
+          UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
+          echo $UPDATED_TASK_BODY
+          # # Loop over the task comments
+          # echo $TASK_COMMENTS | jq -r '.[] | @base64' | while read TASK_COMMENT; do
+          #   TASK_COMMENT=$(echo $TASK_COMMENT | base64 --decode)
             
-            # Get the API URL of the task comment
-            TASK_API_URL=$(echo $TASK_COMMENT | jq -r '.url')
-            echo $TASK_API_URL
+          #   # Get the API URL of the task comment
+          #   TASK_API_URL=$(echo $TASK_COMMENT | jq -r '.url')
+          #   echo $TASK_API_URL
             
-            # Get the body of the task comment
-            TASK_BODY=$(echo $TASK_COMMENT | jq -r '.body')
-            echo $TASK_BODY
+          #   # Get the body of the task comment
+          #   TASK_BODY=$(echo $TASK_COMMENT | jq -r '.body')
+          #   echo $TASK_BODY
             
-            # Replace the checkbox with a checked checkbox
-            UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
-            echo $UPDATED_TASK_BODY
+          #   # Replace the checkbox with a checked checkbox
+          #   UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
+          #   echo $UPDATED_TASK_BODY
             
             # Update the task comment
-            curl -s -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"body\": \"$UPDATED_TASK_BODY\"}" $TASK_API_URL
+            curl -s -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"body\": \"$UPDATED_TASK_BODY\"}" $TASK_COMMENTS
           done
 
