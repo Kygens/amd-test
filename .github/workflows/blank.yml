@@ -1,35 +1,56 @@
-name: Check and Complete Task in Another Repository
-
+name: PR Merged
 on:
   pull_request:
-    types:
-      - closed
-      - synchronize
-      - merged
+    types: [closed]
   push:
     branches:
       main
 
 jobs:
-  checkAndCompleteTask:
+  update-task:
     runs-on: ubuntu-latest
-
+    # if: github.event.pull_request.merged == true
     steps:
-    - name: Récupérer le corps de la pull request
-      run: |
-        PR_BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-                    "https://github.com/repos/${{ github.repository }}/pull/1" | jq -r '.body')
+      - name: Checkout
+        uses: actions/checkout@v4
 
-        # Extraire le numéro de la pull request mentionnée
-        MENTIONED_PR_NUMBER=$(echo "$PR_BODY" | grep -oP 'mentioned this pull request \K\d+')
+      - name: Update task in Repo A
+        run: |
+          # Install necessary dependencies
+          sudo apt-get install jq curl
+          
+          # Get the number of the current PR
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          
+          # Get the repository where the current PR is located
+          REPO=${{ github.repository }}
+          
+          # Get the API URL of the current PR
+          API_URL="https://api.github.com/repos/$REPO/issues/$PR_NUMBER/timeline"
+          
+          # Get the comments of the current PR
+          TIMELINE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
+          
+          # Parse the comments to get the ones that mention a PR in Repo A
+          TASK_COMMENTS=$(echo $TIMELINE | jq '.[] | select(.pull_request)')
+          
+          # Loop over the task comments
+          echo $TASK_COMMENTS | jq -r '.[] | @base64' | while read TASK_COMMENT; do
+            TASK_COMMENT=$(echo $TASK_COMMENT | base64 --decode)
+            
+            # Get the API URL of the task comment
+            TASK_API_URL=$(echo $TASK_COMMENT | jq -r '.url')
+            echo $TASK_API_URL
+            
+            # Get the body of the task comment
+            TASK_BODY=$(echo $TASK_COMMENT | jq -r '.body')
+            echo $TASK_BODY
+            
+            # Replace the checkbox with a checked checkbox
+            UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
+            echo $UPDATED_TASK_BODY
+            
+            # Update the task comment
+            curl -s -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"body\": \"$UPDATED_TASK_BODY\"}" $TASK_API_URL
+          done
 
-        # Si une pull request a été mentionnée
-        if [ -n "$MENTIONED_PR_NUMBER" ]; then
-          echo "Pull request mentionnée : #$MENTIONED_PR_NUMBER"
-
-          # Ajoutez votre logique pour marquer la tâche comme terminée dans le dépôt d'origine
-          # Utilisez l'API GitHub pour ajouter un commentaire avec la tâche cochée dans le dépôt d'origine
-          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -d '{"body": "[x] #'$MENTIONED_PR_NUMBER' (Description de la tâche)"}' \
-            "https://api.github.com/repos/owner/repo-origin/issues/$MENTIONED_PR_NUMBER/comments"
-        fi
