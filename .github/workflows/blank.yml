@@ -59,7 +59,7 @@ jobs:
             echo "curling"
             echo $TASK_COMMENTS
             # curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"body\": \"$UPDATED_TASK_BODY\"}" $TASK_COMMENTS
-            curl -L \
+            echo curl -L \
             -X PATCH \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
