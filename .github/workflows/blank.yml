@@ -34,15 +34,14 @@ jobs:
           TASK_URL=$(echo $TIMELINE | jq '.[1] | .source.issue.pull_request.url')
           
           TASK_BODY=$(echo $TIMELINE | jq '.[1] | .source.issue.body')
-          echo $TASK_BODY
           UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
+          echo $TASK_URL
           echo $UPDATED_TASK_BODY
-          
           # Update the task comment
           curl -L \
           -X PATCH \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          $TASK_URL \
+          "$TASK_URL" \
           -d '{"body": $UPDATED_TASK_BODY}'
