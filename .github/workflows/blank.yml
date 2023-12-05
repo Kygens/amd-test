@@ -39,6 +39,7 @@ jobs:
           echo $TASK_BODY
           UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
           echo $UPDATED_TASK_BODY
+          
           # # Loop over the task comments
           # echo $TASK_COMMENTS | jq -r '.[] | @base64' | while read TASK_COMMENT; do
           #   TASK_COMMENT=$(echo $TASK_COMMENT | base64 --decode)
@@ -56,6 +57,9 @@ jobs:
           #   echo $UPDATED_TASK_BODY
             
             # Update the task comment
+            echo "curling"
+            echo ${{ secrets.GITHUB_TOKEN }}
+            echo $TASK_COMMENTS
             curl -s -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d "{\"body\": \"$UPDATED_TASK_BODY\"}" $TASK_COMMENTS
           done
 
