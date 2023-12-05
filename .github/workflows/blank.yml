@@ -33,7 +33,7 @@ jobs:
           # Parse the comments to get the ones that mention the PR
           TASK_URL=$(echo $TIMELINE | jq -r '.[1] | .source.issue.pull_request.url')
           
-          TASK_BODY=$(echo $TIMELINE | jq '.[1] | .source.issue.body')
+          TASK_BODY=$(echo $TIMELINE | jq -r '.[1] | .source.issue.body')
           UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
           echo $TASK_URL
           echo $UPDATED_TASK_BODY
