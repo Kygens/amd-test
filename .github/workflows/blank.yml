@@ -64,7 +64,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "$TASK_COMMENTS" \
+            $TASK_COMMENTS \
             -d '{"title": "feat(pr): add file to create a PR","body": "$UPDATED_TASK_BODY","state":"open"}'
           done
 
