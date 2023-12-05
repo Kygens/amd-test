@@ -29,8 +29,8 @@ jobs:
           API_URL="https://api.github.com/repos/$REPO/issues/$PR_NUMBER/timeline"
           
           # Get the comments of the current PR
-          TIMELINE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $API_URL)
-          
+          TIMELINE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -i $API_URL)
+          echo $TIMELINE
           # Parse the comments to get the ones that mention a PR in Repo A
           TASK_COMMENTS=$(echo $TIMELINE | jq '.[] | .source.issue.pull_request.html_url')
           
