@@ -37,10 +37,10 @@ jobs:
           UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
           echo $TASK_URL
           echo $UPDATED_TASK_BODY
-          TASK_URL_ENCODED=$(urlencode "$TASK_URL")
-          echo $TASK_URL_ENCODED
+          # TASK_URL_ENCODED=$(urlencode "$TASK_URL")
+          # echo $TASK_URL_ENCODED
           # Update the task comment
-          curl -v -L $TASK_URL_ENCODED
+          curl -v -L "$TASK_URL"
           # curl -L \
           # -X PATCH \
           # -H "Accept: application/vnd.github+json" \
