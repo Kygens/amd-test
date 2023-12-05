@@ -2,13 +2,11 @@ name: PR Merged
 on:
   pull_request:
     types: [closed]
-  push:
-    branches:
-      main
+
 jobs:
   update-task:
     runs-on: ubuntu-latest
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,10 +33,9 @@ jobs:
           
           TASK_BODY=$(echo $TIMELINE | jq -r '.[1] | .source.issue.body')
           UPDATED_TASK_BODY=$(echo $TASK_BODY | sed 's/- \[ \]/- \[x\]/')
-          echo $TASK_URL
-          echo $UPDATED_TASK_BODY
+
           # Update the task comment
-          curl -L \
+          curl -s -L \
           -X PATCH \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
